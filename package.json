@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=14.0.0"
   },
   "scripts": {
     "start": "node src/server.js",
@@ -17,10 +17,10 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "uuid": "^9.0.1",
+    "better-sqlite3": "^11.1.1",
     "body-parser": "^2.2.2",
     "cors": "^2.8.6",
-    "express": "^5.2.1",
-    "better-sqlite3": "^11.1.1",
-    "uuid": "^13.0.0"
+    "express": "^5.2.1"
   }
 }

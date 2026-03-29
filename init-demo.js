@@ -1,4 +1,4 @@
-const { Assessment } = require('./models/models');
+const { v4: uuidv4 } = require('uuid');
 
 const demoAssessment = {
   title: '职业性格倾向测试',
