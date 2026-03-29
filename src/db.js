@@ -1,11 +1,17 @@
-const Database = require('better-sqlite3');
+const Database = require('sqlite3');
 const path = require('path');
+const fs = require('fs');
 
 const dbPath = path.join(__dirname, '../data/assessments.db');
 
-// 设置数据库为 WAL 模式（并发写入）
+// 确保数据目录存在
+const dataDir = path.join(__dirname, '../data');
+if (!fs.existsSync(dataDir)) {
+  fs.mkdirSync(dataDir, { recursive: true });
+  console.log('✅ Created data directory:', dataDir);
+}
+
 const db = new Database(dbPath);
-db.pragma('journal_mode = WAL');
 
 // 初始化表
 db.exec(`
