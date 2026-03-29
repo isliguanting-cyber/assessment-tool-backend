@@ -1,112 +1,67 @@
 const { v4: uuidv4 } = require('uuid');
-const { db, initializeTables } = require('../db');
-
-// 确保表已初始化
-let tablesReady = false;
-
-const readyPromise = initializeTables().then(() => {
-  tablesReady = true;
-  console.log('✅ Database is ready for operations');
-}).catch(err => {
-  console.error('❌ Failed to initialize tables:', err);
-});
-
-// 等待数据库准备好
-function ensureReady() {
-  return readyPromise;
-}
+const db = require('../db');
 
 class Assessment {
   // 创建测评
-  static async create(title, description, questions) {
-    await ensureReady();
+  static create(title, description, questions) {
     const id = uuidv4();
-    return new Promise((resolve, reject) => {
-      const query = `
-        INSERT INTO assessments (id, title, description, questions)
-        VALUES (?, ?, ?, ?)
-      `;
-      db.run(query, [id, title, description, JSON.stringify(questions)], function(err) {
-        if (err) reject(err);
-        else resolve({ id, title, description, questions });
-      });
-    });
+    const stmt = db.prepare(`
+      INSERT INTO assessments (id, title, description, questions)
+      VALUES (?, ?, ?, ?)
+    `);
+    stmt.run(id, title, description, JSON.stringify(questions));
+    stmt.free();
+    return { id, title, description, questions };
   }
 
   // 获取所有测评
-  static async getAll() {
-    await ensureReady();
-    return new Promise((resolve, reject) => {
-      db.all('SELECT * FROM assessments ORDER BY created_at DESC', [], (err, rows) => {
-        if (err) reject(err);
-        else {
-          const assessments = rows.map(row => ({
-            ...row,
-            questions: JSON.parse(row.questions)
-          }));
-          resolve(assessments);
-        }
-      });
-    });
+  static getAll() {
+    const stmt = db.prepare('SELECT * FROM assessments ORDER BY created_at DESC');
+    const rows = stmt.all();
+    stmt.free();
+    return rows.map(row => ({
+      ...row,
+      questions: JSON.parse(row.questions)
+    }));
   }
 
   // 获取单个测评
-  static async getById(id) {
-    await ensureReady();
-    return new Promise((resolve, reject) => {
-      db.get('SELECT * FROM assessments WHERE id = ?', [id], (err, row) => {
-        if (err) reject(err);
-        else if (!row) resolve(null);
-        else {
-          resolve({
-            ...row,
-            questions: JSON.parse(row.questions)
-          });
-        }
-      });
-    });
+  static getById(id) {
+    const stmt = db.prepare('SELECT * FROM assessments WHERE id = ?');
+    const row = stmt.get(id);
+    stmt.free();
+    if (!row) return null;
+    return {
+      ...row,
+      questions: JSON.parse(row.questions)
+    };
   }
 }
 
 class Response {
   // 保存答题记录
-  static async create(assessmentId, answers, result, ipAddress) {
-    await ensureReady();
+  static create(assessmentId, answers, result, ipAddress) {
     const id = uuidv4();
-    return new Promise((resolve, reject) => {
-      const query = `
-        INSERT INTO responses (id, assessment_id, answers, result, ip_address)
-        VALUES (?, ?, ?, ?, ?)
-      `;
-      db.run(query, [
-        id,
-        assessmentId,
-        JSON.stringify(answers),
-        JSON.stringify(result),
-        ipAddress
-      ], function(err) {
-        if (err) reject(err);
-        else resolve({ id, assessment_id: assessmentId, result });
-      });
-    });
+    const stmt = db.prepare(`
+      INSERT INTO responses (id, assessment_id, answers, result, ip_address)
+      VALUES (?, ?, ?, ?, ?)
+    `);
+    stmt.run(id, assessmentId, JSON.stringify(answers), JSON.stringify(result), ipAddress);
+    stmt.free();
+    return { id, assessment_id: assessmentId, result };
   }
 
   // 获取答题记录
-  static async getById(id) {
-    await ensureReady();
-    return new Promise((resolve, reject) => {
-      db.get('SELECT * FROM responses WHERE id = ?', [id], (err, row) => {
-        if (err) reject(err);
-        else if (!row) resolve(null);
-        else {
-          resolve({
-            ...row,
-            answers: JSON.parse(row.answers),
-            result: JSON.parse(row.result)
-          });
-        }
-      });
-    });
+  static getById(id) {
+    const stmt = db.prepare('SELECT * FROM responses WHERE id = ?');
+    const row = stmt.get(id);
+    stmt.free();
+    if (!row) return null;
+    return {
+      ...row,
+      answers: JSON.parse(row.answers),
+      result: JSON.parse(row.result)
+    };
   }
 }
 

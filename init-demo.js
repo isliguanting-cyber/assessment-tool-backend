@@ -57,10 +57,10 @@ const demoAssessment = {
   ]
 };
 
-async function init() {
+function init() {
   try {
     console.log('Creating demo assessment...');
-    const assessment = await Assessment.create(
+    const assessment = Assessment.create(
       demoAssessment.title,
       demoAssessment.description,
       demoAssessment.questions
