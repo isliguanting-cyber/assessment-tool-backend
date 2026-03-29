@@ -1,4 +1,4 @@
-const Database = require('better-sqlite3').default;
+const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 const fs = require('fs');
 
@@ -11,19 +11,21 @@ if (!fs.existsSync(dataDir)) {
   console.log('✅ Created data directory:', dataDir);
 }
 
-const db = new Database(dbPath);
+const db = new sqlite3.Database(dbPath);
 
 // 初始化表
-db.exec(`
-  CREATE TABLE IF NOT EXISTS assessments (
+db.serialize(() => {
+  // 测评表
+  db.run(`CREATE TABLE IF NOT EXISTS assessments (
     id TEXT PRIMARY KEY,
     title TEXT NOT NULL,
     description TEXT,
     questions TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-  );
+  )`);
 
-  CREATE TABLE IF NOT EXISTS responses (
+  // 答题记录表
+  db.run(`CREATE TABLE IF NOT EXISTS responses (
     id TEXT PRIMARY KEY,
     assessment_id TEXT NOT NULL,
     answers TEXT NOT NULL,
@@ -31,9 +33,9 @@ db.exec(`
     ip_address TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (assessment_id) REFERENCES assessments(id)
-  );
-`);
+  )`);
 
-console.log('✅ Database tables initialized');
+  console.log('✅ Database tables initialized');
+});
 
 module.exports = db;
