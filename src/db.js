@@ -1,4 +1,4 @@
-const sqlite3 = require('sqlite3').verbose();
+const better = require('better-sqlite3').verbose();
 const path = require('path');
 const fs = require('fs');
 
@@ -11,7 +11,7 @@ if (!fs.existsSync(dataDir)) {
   console.log('✅ Created data directory:', dataDir);
 }
 
-const db = new sqlite3.Database(dbPath);
+const db = new better.Database(dbPath);
 
 // 初始化表
 db.serialize(() => {
