@@ -1,4 +1,4 @@
-const { Assessment } = require('./src/models/models');
+const { Assessment } = require('./models/models');
 
 const demoAssessment = {
   title: '职业性格倾向测试',
