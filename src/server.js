@@ -11,6 +11,12 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+// 错误处理中间件
+app.use((err, req, res, next) => {
+  console.error('Server error:', err);
+  res.status(500).json({ error: err.message });
+});
+
 // 路由
 app.use('/api', assessmentRoutes);
 
@@ -20,10 +26,18 @@ app.get('/health', (req, res) => {
 });
 
 // 启动服务器
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
+const server = app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📋 API: http://localhost:${PORT}/api`);
   console.log(`❤️  Health: http://localhost:${PORT}/health`);
+});
+
+// 优雅关闭
+process.on('SIGTERM', () => {
+  console.log('SIGTERM signal received: closing HTTP server');
+  server.close(() => {
+    console.log('HTTP server closed');
+  });
 });
 
 module.exports = app;

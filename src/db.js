@@ -3,7 +3,9 @@ const path = require('path');
 
 const dbPath = path.join(__dirname, '../data/assessments.db');
 
+// 设置数据库为 WAL 模式（并发写入）
 const db = new Database(dbPath);
+db.pragma('journal_mode = WAL');
 
 // 初始化表
 db.exec(`
