@@ -16,24 +16,24 @@ const db = new better.Database(dbPath);
 // 初始化表
 db.serialize(() => {
   // 测评表
-  db.run(`CREATE TABLE IF NOT EXISTS assessments (
-    id TEXT PRIMARY KEY,
-    title TEXT NOT NULL,
-    description TEXT,
-    questions TEXT,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-  )`);
+  db.run('CREATE TABLE IF NOT EXISTS assessments ( \
+    id TEXT PRIMARY KEY, \
+    title TEXT NOT NULL, \
+    description TEXT, \
+    questions TEXT, \
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP \
+  )');
 
   // 答题记录表
-  db.run(`CREATE TABLE IF NOT EXISTS responses (
-    id TEXT PRIMARY KEY,
-    assessment_id TEXT NOT NULL,
-    answers TEXT NOT NULL,
-    result TEXT NOT NULL,
-    ip_address TEXT,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (assessment_id) REFERENCES assessments(id)
-  )`);
+  db.run('CREATE TABLE IF NOT EXISTS responses ( \
+    id TEXT PRIMARY KEY, \
+    assessment_id TEXT NOT NULL, \
+    answers TEXT NOT NULL, \
+    result TEXT NOT NULL, \
+    ip_address TEXT, \
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP, \
+    FOREIGN KEY (assessment_id) REFERENCES assessments(id) \
+  )');
 
   console.log('✅ Database tables initialized');
 });
