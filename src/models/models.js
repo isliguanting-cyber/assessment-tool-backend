@@ -1,5 +1,10 @@
-const { v4: uuidv4 } = require('uuid');
+const crypto = require('crypto');
 const db = require('../db');
+
+// 生成 UUID v4（兼容 Node.js 14+）
+function uuidv4() {
+  return crypto.randomUUID();
+}
 
 class Assessment {
   // 创建测评

@@ -1,4 +1,4 @@
-const { v4: uuidv4 } = require('uuid');
+const crypto = require('crypto');
 
 const demoAssessment = {
   title: '职业性格倾向测试',
@@ -60,6 +60,8 @@ const demoAssessment = {
 function init() {
   try {
     console.log('Creating demo assessment...');
+    const id = crypto.randomUUID();
+    const { Assessment } = require('./models/models');
     const assessment = Assessment.create(
       demoAssessment.title,
       demoAssessment.description,
